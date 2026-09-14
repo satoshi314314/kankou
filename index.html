@@ -478,7 +478,7 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
     <span class="pt-coin">🪙</span>
     <div><div class="pt-lbl">POINT</div><div class="pt-val" id="ptVal">850</div></div>
   </div>
-  <button class="qr-btn" onclick="openQR()">📱 QR<br>スキャン</button>
+  <button class="qr-btn" onclick="showToast('QRスキャンは準備中です')" style="opacity:.5;cursor:not-allowed;">📱 QR<br>スキャン</button>
 </header>
 
 <!-- SCROLL -->
@@ -659,7 +659,7 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
     <div class="qm-title">📱 QRスキャン</div>
     <div class="qm-sub">甑島のスポットで<br>QRコードをスキャン！</div>
     <div style="font-size:56px;margin-bottom:12px">📷</div>
-    <button class="full-btn" onclick="simulateScan()">スキャン（デモ）</button>
+    <button class="full-btn" onclick="showToast('QRスキャンは準備中です')" disabled>スキャン（デモ）</button>
     <button class="outline-btn" onclick="closeQR()">キャンセル</button>
   </div>
   <div class="qm-box" id="qmResult" style="display:none">
