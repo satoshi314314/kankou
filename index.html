@@ -140,18 +140,45 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 .rSR{background:linear-gradient(90deg,#FFD43B,#FF9F1C);}.rSSR{background:linear-gradient(90deg,#FF6B6B,#E63946);}
 
 /* ── SPOT ── */
-.qr-box{margin:10px 14px 0;background:linear-gradient(135deg,#FFF0F5,#FFF9E6);border-radius:16px;padding:14px 16px;border:2px dashed #FFB7C5;}
-.qr-box-title{color:#E8729A;font-size:12px;font-weight:900;letter-spacing:2px;margin-bottom:6px;}
+.qr-box{margin:10px 14px 0;background:linear-gradient(135deg,#FFF0F5,#FFF9E6);border-radius:16px;padding:12px 16px;border:2px dashed #FFB7C5;}
+.qr-box-title{color:#E8729A;font-size:12px;font-weight:900;letter-spacing:2px;margin-bottom:4px;}
 .qr-box-text{font-size:11px;color:#888;line-height:1.7;}
-.spot-list{padding:8px 14px 14px;display:flex;flex-direction:column;gap:8px;}
-.spot{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:white;box-shadow:0 3px 12px rgba(80,30,50,.08);}
-.spot-ico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.spot-info{flex:1;}
+/* 地図 */
+
+/* エリアフィルター */
+.spot-filters{display:flex;gap:6px;padding:10px 14px 4px;overflow-x:auto;}
+.spot-filters::-webkit-scrollbar{display:none;}
+.sf{flex-shrink:0;border:2px solid #FFB7C5;background:white;border-radius:20px;padding:4px 12px;font-size:10px;font-weight:900;color:#E8729A;cursor:pointer;transition:all .15s;}
+.sf.active{background:linear-gradient(135deg,#FFB7C5,#E8729A);color:white;border-color:transparent;}
+/* 進捗 */
+.spot-progress{margin:6px 14px 0;background:white;border-radius:14px;padding:10px 14px;box-shadow:0 2px 10px rgba(80,30,50,.08);display:flex;align-items:center;gap:10px;}
+.sp-track{flex:1;background:#F5EEF8;border-radius:6px;height:8px;overflow:hidden;}
+.sp-fill{height:100%;background:linear-gradient(90deg,#FFB7C5,#E8729A);border-radius:6px;transition:width .6s;}
+.sp-cnt{font-size:14px;color:#E8729A;font-weight:900;white-space:nowrap;}
+/* スポットリスト */
+.spot-list{padding:6px 14px 14px;display:flex;flex-direction:column;gap:7px;}
+.spot{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:15px;background:white;box-shadow:0 2px 10px rgba(80,30,50,.08);cursor:pointer;transition:transform .12s;}
+.spot:active{transform:scale(.97);}
+.spot-ico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:#FFF0F5;}
+.spot-info{flex:1;min-width:0;}
 .spot-name{font-weight:900;font-size:13px;color:#333;}
+.spot-area{font-size:9px;color:#aaa;font-weight:700;letter-spacing:1px;margin-top:1px;}
 .spot-pt{font-size:10px;color:#E8729A;font-weight:700;margin-top:2px;}
 .spot-badge{font-size:8px;padding:3px 7px;border-radius:7px;font-weight:900;flex-shrink:0;}
 .bd-done{background:#F0FFF4;color:#5CAD5C;}
 .bd-go{background:linear-gradient(135deg,#FFB7C5,#E8729A);color:white;}
+/* スポット詳細モーダル */
+#spotModal{position:fixed;inset:0;z-index:600;display:none;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;}
+#spotModal.show{display:flex;}
+.spot-modal-box{background:white;border-radius:24px 24px 0 0;padding:0 0 24px;width:100%;max-width:430px;max-height:80vh;overflow-y:auto;}
+.spot-modal-img{width:100%;height:160px;object-fit:cover;background:linear-gradient(135deg,#FFE0EB,#FFF0C0);display:flex;align-items:center;justify-content:center;font-size:60px;border-radius:24px 24px 0 0;}
+.spot-modal-body{padding:16px 18px;}
+.spot-modal-area{font-size:9px;color:#aaa;font-weight:900;letter-spacing:2px;margin-bottom:4px;}
+.spot-modal-name{font-size:20px;font-weight:900;color:#333;margin-bottom:6px;}
+.spot-modal-desc{font-size:12px;color:#666;line-height:1.8;margin-bottom:14px;}
+.spot-modal-reward{background:#FFF0F5;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.spot-modal-reward span{font-size:11px;color:#E8729A;font-weight:700;}
+.spot-modal-close{width:100%;border:2px solid #FFB7C5;background:white;color:#E8729A;border-radius:14px;padding:11px;font-size:13px;font-weight:900;cursor:pointer;}
 
 /* ── GACHA OVERLAY ── */
 #gachaOverlay{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;flex-direction:column;}
@@ -459,6 +486,8 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 .rg-count-num{font-size:110px;font-weight:900;color:#39FF14;text-shadow:0 0 40px rgba(57,255,20,1);animation:cntPop .65s cubic-bezier(.34,1.56,.64,1) both;}
 @keyframes cntPop{0%{transform:scale(2);opacity:0;}100%{transform:scale(1);opacity:1;}}
 </style>
+
+
 </head>
 <body>
 
@@ -589,6 +618,20 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
       <div class="qr-box-title">📱 QRコード連携</div>
       <div class="qr-box-text">甑島の各スポットにあるQRコードをスキャンするだけで、ポイント＆アイテムが自動でもらえる！</div>
     </div>
+
+    <!-- 進捗 -->
+    <div class="spot-progress">
+      <span style="font-size:20px">🗺️</span>
+      <div class="sp-track"><div class="sp-fill" id="spFill" style="width:0%"></div></div>
+      <div class="sp-cnt" id="spCnt">0/17</div>
+    </div>
+    <!-- エリアフィルター -->
+    <div class="spot-filters">
+      <button class="sf active" onclick="filterSpots('all',this)">すべて</button>
+      <button class="sf" onclick="filterSpots('上甑島',this)">上甑島</button>
+      <button class="sf" onclick="filterSpots('鹿島',this)">鹿島</button>
+      <button class="sf" onclick="filterSpots('下甑島',this)">下甑島</button>
+    </div>
     <div class="spot-list" id="spotList"></div>
   </div>
 
@@ -600,7 +643,7 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
   <button class="tb" onclick="switchTab('gacha',this)"><span class="ti">🎰</span>ガチャ</button>
   <button class="tb" onclick="switchTab('zukan',this)"><span class="ti">📖</span>図鑑</button>
   <button class="tb" onclick="switchTab('spot',this)"><span class="ti">🗺️</span>スポット</button>
-  <button class="tb" onclick="openRhythm()"><span class="ti">🌿</span>駆除作業</button>
+  <!-- 駆除作業タブ（一時オフ） -->
 </div>
 
 <!-- GACHA OVERLAY -->
@@ -650,6 +693,26 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
     <div class="m-reward"><p>獲得報酬</p><div class="m-reward-val" id="mRwVal">+0 pt / EXP +0</div></div>
     <button class="pink-btn" onclick="startMole()">もう一度！</button>
     <button class="ghost-btn" onclick="closeMole()">ホームへ戻る</button>
+  </div>
+</div>
+
+<!-- SPOT DETAIL MODAL -->
+<div id="spotModal">
+  <div class="spot-modal-box">
+    <div class="spot-modal-img" id="spotModalImg"></div>
+    <div class="spot-modal-body">
+      <div class="spot-modal-area" id="spotModalArea"></div>
+      <div class="spot-modal-name" id="spotModalName"></div>
+      <div class="spot-modal-desc" id="spotModalDesc"></div>
+      <div class="spot-modal-reward">
+        <span style="font-size:22px" id="spotModalIcon"></span>
+        <div>
+          <span id="spotModalPt" style="display:block;font-size:16px;font-weight:900;color:#E8729A;"></span>
+          <span id="spotModalItem"></span>
+        </div>
+      </div>
+      <button class="spot-modal-close" onclick="closeSpotModal()">とじる</button>
+    </div>
   </div>
 </div>
 
@@ -771,12 +834,24 @@ const GACHA_POOL = [
 ];
 
 const SPOTS = [
-  ['kamidaijin','甑大明神','🏯',150,'星降る砂',true],
-  ['kankokyokai','甑島観光協会','🏠',80,'朝露のしずく',true],
-  ['nagahama','長浜海水浴場','🌊',100,'甑島の海水',false],
-  ['kanoko','カノコユリ群生地','🌸',200,'満開の花びら',false],
-  ['tenbodai','瀬々野浦展望台','🗼',120,'甑の陽光',false],
-  ['satochiku','里集落 鎮守の森','⛩️',130,'里集落の竹',false],
+  // id, 名前, アイコン, pt, アイテム, visited, lat, lng, エリア, 説明
+  {id:'micchiri',   name:'みっちり草原',          icon:'🌿', pt:100, item:'若葉の力',       lat:31.975, lng:129.880, area:'上甑島', desc:'緑一面に広がる草原。カノコユリが咲き乱れる絶景スポット。'},
+  {id:'nagahama_sho',name:'長浜小学校',            icon:'🏫', pt:80,  item:'朝露のしずく',   lat:31.820, lng:129.740, area:'下甑島', desc:'甑島の未来を担う子どもたちが学ぶ学校。'},
+  {id:'ebi',        name:'えび選別所',             icon:'🦐', pt:120, item:'珊瑚のかけら',   lat:31.825, lng:129.742, area:'下甑島', desc:'甑島名産のえびを選別する漁業施設。新鮮な海の恵みを感じよう。'},
+  {id:'koshikiya',  name:'こしきや（高速船内）',   icon:'⛴️', pt:150, item:'甑の風',         lat:31.820, lng:129.738, area:'下甑島', desc:'甑島と本土を結ぶ高速船の中。島への期待が高まる旅のはじまり。'},
+  {id:'cafe_shiki', name:'カフェ恋四季',           icon:'☕', pt:100, item:'カノコユリの蜜',  lat:31.822, lng:129.743, area:'下甑島', desc:'長浜港近くの人気カフェ。甑島の食材を使ったメニューが楽しめる。'},
+  {id:'omiyage',    name:'長浜港お土産処',         icon:'🎁', pt:80,  item:'甑の大地',       lat:31.820, lng:129.739, area:'下甑島', desc:'長浜港にある土産店。甑島ならではの特産品が並ぶ。'},
+  {id:'ofukuro',    name:'おふくろさん歌碑',       icon:'🎵', pt:120, item:'月の露',          lat:31.728, lng:129.720, area:'下甑島', desc:'森進一さんの名曲「おふくろさん」の歌碑。足マークに立つと曲が流れる。'},
+  {id:'nagahama_c', name:'長浜コミュニティセンター',icon:'🏛️', pt:80,  item:'里集落の竹',     lat:31.821, lng:129.741, area:'下甑島', desc:'地域住民の集会や活動の拠点となる施設。'},
+  {id:'teutchi_c',  name:'手打コミュニティセンター',icon:'🏛️', pt:80,  item:'里集落の竹',     lat:31.727, lng:129.718, area:'下甑島', desc:'手打地区の交流拠点。地域の文化活動が盛ん。'},
+  {id:'nishiyama_c',name:'西山コミュニティセンター',icon:'🏛️', pt:80,  item:'里集落の竹',     lat:31.760, lng:129.725, area:'下甑島', desc:'西山地区の住民が集う施設。'},
+  {id:'alpha_yume', name:'α夢',                   icon:'🌟', pt:130, item:'蒼き霊石',        lat:31.830, lng:129.748, area:'下甑島', desc:'甑島の魅力を発信するスポット。'},
+  {id:'kayo_coffee',name:'カヨラコーヒー',         icon:'☕', pt:100, item:'カノコユリの蜜',  lat:31.828, lng:129.745, area:'下甑島', desc:'島で愛されるコーヒーショップ。のんびりした時間を過ごせる。'},
+  {id:'koshiki_museum',name:'甑ミュージアム',      icon:'🦕', pt:200, item:'龍の鱗',          lat:31.930, lng:129.830, area:'鹿島', desc:'鹿島にある恐竜化石ミュージアム。甑島で発見された貴重な化石を展示。'},
+  {id:'kurumi',     name:'喫茶くるみ',             icon:'☕', pt:100, item:'カノコユリの蜜',  lat:31.826, lng:129.744, area:'下甑島', desc:'地元で親しまれる喫茶店。ほっとする時間を過ごせる。'},
+  {id:'napoleon',   name:'ナポレオン岩',           icon:'🪨', pt:180, item:'星降る砂',        lat:31.770, lng:129.690, area:'下甑島', desc:'下甑島の沖に立つ高さ127mの奇岩。横顔がナポレオンに似ていると言われる。'},
+  {id:'kodaiken',   name:'孤島の野犬像',           icon:'🐕', pt:120, item:'トビの羽根',      lat:31.825, lng:129.742, area:'下甑島', desc:'甑島に生きた野犬たちの記念碑。島の歴史を語る。'},
+  {id:'yoshinaga',  name:'吉永酒造',              icon:'🍶', pt:130, item:'甑の風',           lat:31.823, lng:129.743, area:'下甑島', desc:'甑島の地酒を造る老舗酒造。島の文化と伝統を守り続ける。'},
 ];
 
 // ═══════════════════════
@@ -987,35 +1062,83 @@ function renderZukan(){
 // ═══════════════════════
 //  SPOT / QR
 // ═══════════════════════
-function renderSpots(){
+// 現在のフィルター
+var spotAreaFilter = 'all';
+
+function filterSpots(area, el) {
+  spotAreaFilter = area;
+  document.querySelectorAll('.sf').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  renderSpots();
+}
+
+function renderSpots() {
   var list=$('spotList'); if(!list) return;
   list.innerHTML='';
-  SPOTS.forEach(function(sp){
-    var visited=S.visitedSpots.has(sp[0]);
+  var filtered = spotAreaFilter==='all'
+    ? SPOTS
+    : SPOTS.filter(function(sp){ return sp.area===spotAreaFilter; });
+  var visited = SPOTS.filter(function(sp){ return S.visitedSpots.has(sp.id); }).length;
+  var fill=$('spFill'); if(fill) fill.style.width=Math.round(visited/SPOTS.length*100)+'%';
+  var cnt=$('spCnt'); if(cnt) cnt.textContent=visited+'/'+SPOTS.length;
+  filtered.forEach(function(sp) {
+    var done = S.visitedSpots.has(sp.id);
     var d=document.createElement('div'); d.className='spot';
-    d.innerHTML='<div class="spot-ico" style="background:#FFF5F8">'+sp[2]+'</div>'
-      +'<div class="spot-info"><div class="spot-name">'+sp[1]+'</div><div class="spot-pt">+'+sp[3]+' pt / '+sp[4]+'</div></div>'
-      +'<span class="spot-badge '+(visited?'bd-done':'bd-go')+'">'+(visited?'✓ 済':'GO →')+'</span>';
+    var gmapUrl = 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(sp.name+' 甑島 鹿児島');
+    if(sp.lat && sp.lng) gmapUrl = 'https://www.google.com/maps/search/?api=1&query='+sp.lat+','+sp.lng;
+    d.innerHTML='<div class="spot-ico">'+sp.icon+'</div>'
+      +'<div class="spot-info">'
+        +'<div class="spot-name">'+sp.name+'</div>'
+        +'<div class="spot-area">'+sp.area+'</div>'
+        +'<div class="spot-pt">+'+sp.pt+' pt / '+sp.item+'</div>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">'
+        +'<span class="spot-badge '+(done?'bd-done':'bd-go')+'">'+(done?'✓ 済':'→')+'</span>'
+        +'<a href="'+gmapUrl+'" target="_blank" onclick="event.stopPropagation()" '
+          +'style="font-size:18px;text-decoration:none;" title="Googleマップで開く">📍</a>'
+      +'</div>';
+    d.onclick = function(){ openSpotModal(sp); };
     list.appendChild(d);
   });
 }
+
+function openSpotModal(sp) {
+  var done = S.visitedSpots.has(sp.id);
+  var mi=$('spotModal'); if(!mi) return;
+  $('spotModalImg').textContent = sp.icon;
+  $('spotModalImg').style.fontSize = '64px';
+  $('spotModalArea').textContent = sp.area;
+  $('spotModalName').textContent = sp.name;
+  $('spotModalDesc').textContent = sp.desc;
+  $('spotModalIcon').textContent = sp.icon;
+  $('spotModalPt').textContent   = '+'+sp.pt+' pt';
+  $('spotModalItem').textContent = sp.item+' をGET';
+  mi.classList.add('show');
+}
+function closeSpotModal() {
+  var mi=$('spotModal'); if(mi) mi.classList.remove('show');
+}
+
+// ── OpenStreetMap + Leaflet 地図 ──
+
+function initSpotMap(){} // 地図なし
 function openQR(){
   $('qmScan').style.display='block'; $('qmResult').style.display='none';
   $('qrModal').classList.add('show');
 }
 function closeQR(){ $('qrModal').classList.remove('show'); }
 function simulateScan(){
-  var unv=SPOTS.filter(function(sp){return !S.visitedSpots.has(sp[0]);});
+  var unv=SPOTS.filter(function(sp){return !S.visitedSpots.has(sp.id);});
   var sp=unv.length>0?unv[Math.floor(Math.random()*unv.length)]:SPOTS[0];
   showSpotResult(sp);
 }
 function showSpotResult(sp){
   $('qmScan').style.display='none'; $('qmResult').style.display='block';
-  $('qmIcon').textContent=sp[2]; $('qmName').textContent=sp[1];
-  $('qmGain').textContent='+'+sp[3]+' pt';
-  var it=S.items[sp[4]];
-  $('qmItem').textContent=(it?it.emoji+' ':'')+sp[4]+' をGET！';
-  $('qmResult').dataset.spotId=sp[0];
+  $('qmIcon').textContent=sp.icon; $('qmName').textContent=sp.name;
+  $('qmGain').textContent='+'+sp.pt+' pt';
+  var it=S.items[sp.item];
+  $('qmItem').textContent=(it?it.emoji+' ':'')+sp.item+' をGET！';
+  $('qmResult').dataset.spotId=sp.id;
   $('qrModal').classList.add('show');
 }
 function collectSpot(){
@@ -1036,7 +1159,7 @@ function collectSpot(){
 window.addEventListener('load', function(){
   var p=new URLSearchParams(location.search).get('spot');
   if(p){
-    var sp=SPOTS.find(function(s){return s[0]===p;});
+    var sp=SPOTS.find(function(s){return s.id===p;});
     if(sp) setTimeout(function(){showSpotResult(sp);},600);
   }
 });
@@ -1044,13 +1167,7 @@ window.addEventListener('load', function(){
 // ═══════════════════════
 //  ENEMY / MOLE
 // ═══════════════════════
-function scheduleEnemy(){
-  setTimeout(function(){
-    S.enemyActive=true;
-    var ea=$('enemyAlert'); if(ea) ea.style.display='block';
-    
-  }, 15000+Math.random()*20000);
-}
+function scheduleEnemy(){} // 一時オフ
 function openMole(){
   $('moleOverlay').classList.add('show');
   $('mIntro').style.display='flex';
