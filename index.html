@@ -217,9 +217,12 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 .res-skip{width:100%;border:2px solid rgba(255,183,197,.4);background:rgba(255,183,197,.08);border-radius:16px;padding:10px;cursor:pointer;font-size:12px;font-weight:900;color:#E8729A;margin-top:8px;display:none;}
 
 /* ── MOLE OVERLAY ── */
-#moleOverlay{position:fixed;inset:0;z-index:800;display:none;background:linear-gradient(180deg,#0d0020,#1a003a);flex-direction:column;align-items:center;}
+#moleOverlay{position:fixed;inset:0;z-index:800;display:none;flex-direction:column;align-items:center;overflow:hidden;
+  background:linear-gradient(180deg,#87CEEB 0%,#b0e0f7 35%,#5ba85a 55%,#3e7d3a 65%,#6b4c2a 75%,#8B6343 100%);}
 #moleOverlay.show{display:flex;}
-.mole-hdr{width:100%;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(57,255,20,.2);flex-shrink:0;}
+#mole-bg-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.mole-hdr,.mole-intro,.mole-game,.mole-result{position:relative;z-index:1;}
+.mole-hdr{width:100%;padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top,10px));display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.35);border-bottom:1px solid rgba(57,255,20,.3);flex-shrink:0;position:sticky;top:0;z-index:10;}
 .mole-title{color:#39FF14;font-size:14px;font-weight:900;letter-spacing:2px;text-shadow:0 0 8px #39FF14;}
 .mole-stats{display:flex;gap:12px;}
 .mole-st{color:white;font-size:16px;font-weight:900;}
@@ -229,8 +232,8 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 .mole-intro p{font-size:11px;color:rgba(255,255,255,.5);font-weight:700;line-height:1.8;}
 .mole-game{flex:1;display:none;align-items:center;justify-content:center;width:100%;}
 .mole-field{width:100%;max-width:380px;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.mhole{aspect-ratio:1;border-radius:50%;background:radial-gradient(ellipse at 50% 70%,#0a0020,#1a003a);border:3px solid rgba(57,255,20,.2);position:relative;overflow:hidden;cursor:pointer;}
-.mhole.has-e{border-color:rgba(57,255,20,.6);box-shadow:0 0 14px rgba(57,255,20,.3);}
+.mhole{aspect-ratio:1;border-radius:50%;background:radial-gradient(ellipse at 50% 75%,#2d1a0e,#5d3a1a);border:4px solid #8d6e63;position:relative;overflow:hidden;cursor:pointer;box-shadow:inset 0 4px 12px rgba(0,0,0,.5),0 3px 8px rgba(0,0,0,.4);}
+.mhole.has-e{border-color:#a5d6a7;box-shadow:inset 0 4px 12px rgba(0,0,0,.5),0 0 16px rgba(102,187,106,.5);}
 .mhole img{width:75%;height:75%;object-fit:contain;position:absolute;bottom:-100%;left:12.5%;transition:bottom .25s cubic-bezier(.34,1.56,.64,1);}
 .mhole img.up{bottom:0;}
 .mhole img.friend{filter:drop-shadow(0 0 8px rgba(255,183,197,.8));display:none;}
@@ -245,7 +248,7 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 .m-reward-val{font-size:20px;font-weight:900;color:#FFB7C5;}
 .green-btn{background:linear-gradient(135deg,#39FF14,#00CC00);color:#000;border:none;border-radius:18px;padding:14px 36px;font-size:17px;font-weight:900;cursor:pointer;}
 .pink-btn{background:linear-gradient(135deg,#FFB7C5,#E8729A);color:white;border:none;border-radius:16px;padding:12px 28px;font-size:14px;font-weight:900;cursor:pointer;}
-.ghost-btn{background:none;border:2px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);border-radius:14px;padding:10px 24px;cursor:pointer;font-size:12px;font-weight:900;}
+.ghost-btn{background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.7);color:#fff;border-radius:20px;padding:8px 22px;cursor:pointer;font-size:13px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.25);}
 
 /* ── QR MODAL ── */
 #qrModal{position:fixed;inset:0;z-index:700;display:none;background:rgba(0,0,0,.55);align-items:center;justify-content:center;}
@@ -651,7 +654,7 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
     <div style="display:flex;align-items:center;gap:14px;">
       <div style="font-size:3em;line-height:1;">🌸</div>
       <div>
-        <div style="font-size:1.15em;font-weight:bold;color:#7b2d8b;">スポーン！シンテッポウユリ駆除ゲーム</div>
+        <div style="font-size:1.15em;font-weight:bold;color:#7b2d8b;">スポーン！シンテッポウユリ駆除！</div>
         <div style="font-size:0.85em;color:#a0527a;margin-top:4px;">リズムに合わせてユリを引き抜こう！</div>
         <div style="margin-top:8px;">
           <span style="background:#7b2d8b;color:#fff;border-radius:20px;padding:4px 14px;font-size:0.82em;">▶ あそぶ</span>
@@ -711,7 +714,62 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 
 <!-- MOLE OVERLAY -->
 <div id="moleOverlay">
+  <!-- 甑島風SVG背景 -->
+  <svg id="mole-bg-svg" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <!-- 空グラデーション -->
+    <defs>
+      <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4fc3f7"/><stop offset="100%" stop-color="#b3e5fc"/></linearGradient>
+      <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1e88e5"/><stop offset="100%" stop-color="#0d47a1"/></linearGradient>
+      <linearGradient id="groundG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#66bb6a"/><stop offset="40%" stop-color="#4caf50"/><stop offset="100%" stop-color="#795548"/></linearGradient>
+    </defs>
+    <!-- 空 -->
+    <rect width="390" height="844" fill="url(#skyG)"/>
+    <!-- 太陽 -->
+    <circle cx="320" cy="80" r="38" fill="#FFF176" opacity=".9"/>
+    <circle cx="320" cy="80" r="50" fill="#FFEE58" opacity=".3"/>
+    <!-- 雲1 -->
+    <g opacity=".9">
+      <ellipse cx="80" cy="110" rx="45" ry="22" fill="white"/>
+      <ellipse cx="110" cy="100" rx="35" ry="20" fill="white"/>
+      <ellipse cx="50" cy="118" rx="30" ry="16" fill="white"/>
+    </g>
+    <!-- 雲2 -->
+    <g opacity=".85">
+      <ellipse cx="260" cy="145" rx="38" ry="18" fill="white"/>
+      <ellipse cx="285" cy="136" rx="28" ry="16" fill="white"/>
+      <ellipse cx="240" cy="152" rx="24" ry="13" fill="white"/>
+    </g>
+    <!-- 下甑島のシルエット（遠景） -->
+    <ellipse cx="80" cy="420" rx="90" ry="40" fill="#2e7d32" opacity=".7"/>
+    <ellipse cx="310" cy="410" rx="70" ry="32" fill="#1b5e20" opacity=".65"/>
+    <!-- 海 -->
+    <rect y="390" width="390" height="100" fill="url(#seaG)" opacity=".85"/>
+    <!-- 波 -->
+    <path d="M0 410 Q20 405 40 410 Q60 415 80 410 Q100 405 120 410 Q140 415 160 410 Q180 405 200 410 Q220 415 240 410 Q260 405 280 410 Q300 415 320 410 Q340 405 360 410 Q380 415 390 410 L390 425 L0 425Z" fill="white" opacity=".25"/>
+    <path d="M0 425 Q25 420 50 425 Q75 430 100 425 Q125 420 150 425 Q175 430 200 425 Q225 420 250 425 Q275 430 300 425 Q325 420 350 425 Q375 430 390 425 L390 440 L0 440Z" fill="white" opacity=".18"/>
+    <!-- 草地 -->
+    <rect y="480" width="390" height="364" fill="#5d4037"/>
+    <ellipse cx="195" cy="480" rx="220" ry="35" fill="#4caf50"/>
+    <!-- 草の模様 -->
+    <g fill="#388e3c" opacity=".7">
+      <ellipse cx="40" cy="475" rx="18" ry="8"/><ellipse cx="100" cy="470" rx="22" ry="9"/>
+      <ellipse cx="160" cy="473" rx="16" ry="7"/><ellipse cx="230" cy="469" rx="20" ry="8"/>
+      <ellipse cx="290" cy="472" rx="18" ry="7"/><ellipse cx="350" cy="470" rx="22" ry="9"/>
+    </g>
+    <!-- カノコユリ（背景装飾） -->
+    <g opacity=".6">
+      <circle cx="30" cy="455" r="7" fill="#e91e63"/><circle cx="30" cy="455" r="4" fill="#f48fb1"/>
+      <line x1="30" y1="462" x2="30" y2="480" stroke="#4caf50" stroke-width="2"/>
+      <circle cx="370" cy="450" r="7" fill="#e91e63"/><circle cx="370" cy="450" r="4" fill="#f48fb1"/>
+      <line x1="370" y1="457" x2="370" y2="478" stroke="#4caf50" stroke-width="2"/>
+      <circle cx="185" cy="448" r="6" fill="#ff7043"/><circle cx="185" cy="448" r="3.5" fill="#ffccbc"/>
+      <line x1="185" y1="454" x2="185" y2="472" stroke="#4caf50" stroke-width="2"/>
+    </g>
+    <!-- 土（穴エリア） -->
+    <rect y="500" width="390" height="344" fill="#6d4c41" opacity=".6"/>
+  </svg>
   <div class="mole-hdr">
+    <button class="ghost-btn" onclick="closeMole()" style="padding:6px 14px;font-size:12px;">✕ もどる</button>
     <div class="mole-title">⚡ 撃退ミニゲーム</div>
     <div class="mole-stats">
       <div class="mole-st">⏱ <span id="mTimer">15</span></div>
@@ -1163,12 +1221,10 @@ function renderSpots() {
     var done = S.visitedSpots.has(sp.id);
     var d=document.createElement('div'); d.className='spot';
     var gmapUrl = 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(sp.name+' 甑島 鹿児島');
-    if(sp.lat && sp.lng) gmapUrl = 'https://www.google.com/maps/search/?api=1&query='+sp.lat+','+sp.lng;
     d.innerHTML='<div class="spot-ico">'+sp.icon+'</div>'
       +'<div class="spot-info">'
         +'<div class="spot-name">'+sp.name+'</div>'
         +'<div class="spot-area">'+sp.area+'</div>'
-        +'<div class="spot-pt">+'+sp.pt+' pt / '+sp.item+'</div>'
       +'</div>'
       +'<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;">'
         +'<span class="spot-badge '+(done?'bd-done':'bd-go')+'">'+(done?'✓ 済':'詳細')+'</span>'
@@ -1290,6 +1346,7 @@ function closeMole(){
 }
 var ML={score:0,timer:15,iv:null,tv:null,holes:[],active:new Set()};
 function startMole(){
+  sndMoleStart();
   ML.score=0; ML.timer=15; ML.active.clear();
   $('mScore').textContent=0; $('mTimer').textContent=15;
   $('mIntro').style.display='none';
@@ -1328,6 +1385,7 @@ function popHole(){
   var fr=Math.random()<.25;
   ML.active.add(i); ML.holes[i].friend=fr;
   ML.holes[i].h.classList.add('has-e');
+  sndMolePop();
   if(fr){ ML.holes[i].fi.classList.add('up'); }
   else  { ML.holes[i].ei.classList.add('up'); }
   setTimeout(function(){hideHole(i);}, fr?800:1100+Math.random()*600);
@@ -1339,12 +1397,17 @@ function hideHole(i){
   ML.holes[i].ei.classList.remove('up');
   ML.holes[i].fi.classList.remove('up');
 }
+function sndMolePop(){var ac=getAC();if(!ac)return;var o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.setValueAtTime(300,ac.currentTime);o.frequency.exponentialRampToValueAtTime(600,ac.currentTime+.05);g.gain.setValueAtTime(.4,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.18);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.2);}
+function sndMoleHit(){var ac=getAC();if(!ac)return;var bs=ac.sampleRate*.06,buf=ac.createBuffer(1,bs,ac.sampleRate),d=buf.getChannelData(0);for(var i=0;i<bs;i++)d[i]=(Math.random()*2-1)*.8;var src=ac.createBufferSource();src.buffer=buf;var f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=800;f.Q.value=1;var g=ac.createGain();g.gain.setValueAtTime(.5,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.12);src.connect(f);f.connect(g);g.connect(ac.destination);src.start();src.stop(ac.currentTime+.15);playTone(440,.06,.2,'sine');}
+function sndMoleFriend(){playTone(300,.08,.25,'sawtooth',.07);setTimeout(function(){playTone(250,.1,.2,'sawtooth',.09);},80);}
+function sndMoleStart(){[523,659,784].forEach(function(f,i){setTimeout(function(){playTone(f,.1,.2,'sine');},i*80);});}
+function sndMoleEnd(win){if(win){[523,659,784,1047].forEach(function(f,i){setTimeout(function(){playTone(f,.15,.28,'sine');},i*90);});}else{[330,277,220].forEach(function(f,i){setTimeout(function(){playTone(f,.15,.22,'sawtooth');},i*100);});}}
 function hitHole(i,h,ei,fi,hx){
   if(!ML.active.has(i)) return;
   var fr=ML.holes[i].friend; hideHole(i);
   hx.classList.add('flash'); setTimeout(function(){hx.classList.remove('flash');},150);
-  if(fr){ ML.score=Math.max(0,ML.score-3); showToast('😢 カノコユリッピーを叩いた！ -3'); }
-  else   { ML.score++; }
+  if(fr){ ML.score=Math.max(0,ML.score-3); showToast('😢 カノコユリッピーを叩いた！ -3'); sndMoleFriend(); }
+  else   { ML.score++; sndMoleHit(); }
   $('mScore').textContent=ML.score;
   var pop=document.createElement('div');
   pop.style.cssText='position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:18px;font-weight:900;color:'+(fr?'#FF4466':'#39FF14')+';pointer-events:none;animation:spkOut .6s ease-out forwards;z-index:10;';
@@ -1362,6 +1425,7 @@ function endMole(){
   $('mResult').classList.add('show');
   S.enemyActive=ML.score<5;
   var ea=$('enemyAlert'); if(ea) ea.style.display=ML.score<5?'block':'none';
+  sndMoleEnd(ML.score>=5);
   showToast(ML.score>=5?'🎉 撃退成功！':'😢 逃げられた…');
   if(!S.enemyActive) scheduleEnemy();
 }
@@ -2108,8 +2172,8 @@ function sndWatch(type) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
 #rgOverlay { position:fixed;inset:0;z-index:8500;flex-direction:column;background:#fffaf2;display:none; }
-#rgBar { position:absolute;top:0;left:0;right:0;height:48px;background:rgba(232,87,142,0.95);display:flex;align-items:center;padding:0 14px;z-index:2;gap:10px; }
-#rgContainer { position:absolute;top:48px;left:0;right:0;bottom:0;overflow:hidden;background:#fffaf2; }
+#rgBar { position:fixed;top:0;top:env(safe-area-inset-top,0px);left:0;right:0;height:52px;background:rgba(232,87,142,0.97);display:flex;align-items:center;padding:0 14px;padding-top:env(safe-area-inset-top,0px);z-index:9999;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+#rgContainer { position:fixed;top:52px;top:calc(52px + env(safe-area-inset-top,0px));left:0;right:0;bottom:0;overflow:hidden;background:#fffaf2;z-index:8501; }
 
 :root{
   --pink:#e8578e; --ink:#3a2a1e; --sea:#2f8fb5; --paper:#fffaf2;
@@ -2183,7 +2247,7 @@ button .sub{display:block;font-size:11px;font-weight:700;opacity:.85}
 <div id="rgOverlay">
   <div id="rgBar">
     <button onclick="closeRhythmGame()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:6px 16px;border-radius:20px;font-size:0.9em;cursor:pointer;font-weight:bold;">✕ もどる</button>
-    <span style="color:#fff;font-size:0.9em;font-weight:bold;">🌸 スポーン！シンテッポウユリ駆除ゲーム</span>
+    <span style="color:#fff;font-size:0.9em;font-weight:bold;">🌸 スポーン！シンテッポウユリ駆除！</span>
   </div>
   <div id="rgContainer">
 <div id="rg_stage">
