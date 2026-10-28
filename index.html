@@ -172,6 +172,18 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 .spot-badge{font-size:8px;padding:3px 7px;border-radius:7px;font-weight:900;flex-shrink:0;}
 .bd-done{background:#F0FFF4;color:#5CAD5C;}
 .bd-go{background:linear-gradient(135deg,#FFB7C5,#E8729A);color:white;}
+/* スタンプ */
+.spot-stamp{position:absolute;top:-6px;right:-6px;width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.95);border:2.5px solid #E8729A;border-radius:50%;transform:rotate(15deg);box-shadow:0 2px 8px rgba(232,114,154,.35);pointer-events:none;z-index:5;}
+.spot-stamp .stamp-lily{font-size:20px;line-height:1;margin-bottom:-2px;}
+.spot-stamp .stamp-text{font-size:5.5px;font-weight:900;color:#E8729A;letter-spacing:.5px;}
+.spot{position:relative;}
+/* スポットモーダルのスタンプ */
+.spot-modal-stamp{position:absolute;bottom:12px;right:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:64px;background:rgba(255,255,255,.92);border:3px solid #E8729A;border-radius:50%;transform:rotate(-8deg);box-shadow:0 3px 14px rgba(232,114,154,.4);}
+.spot-modal-stamp .stamp-lily{font-size:30px;line-height:1;}
+.spot-modal-stamp .stamp-text{font-size:7px;font-weight:900;color:#E8729A;letter-spacing:.5px;margin-top:1px;}
+/* スタンプポップアニメ */
+@keyframes stampPop{0%{transform:rotate(15deg) scale(0);opacity:0;}60%{transform:rotate(15deg) scale(1.2);}80%{transform:rotate(15deg) scale(.93);}100%{transform:rotate(15deg) scale(1);opacity:1;}}
+.spot-stamp.pop{animation:stampPop .4s cubic-bezier(.22,1.5,.36,1) both;}
 /* スポット詳細モーダル */
 #spotModal{position:fixed;inset:0;z-index:600;display:none;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;}
 #spotModal.show{display:flex;}
@@ -186,35 +198,128 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 .spot-modal-close{width:100%;border:2px solid #FFB7C5;background:white;color:#E8729A;border-radius:14px;padding:11px;font-size:13px;font-weight:900;cursor:pointer;}
 
 /* ── GACHA OVERLAY ── */
-#gachaOverlay{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;flex-direction:column;}
+#gachaOverlay{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;}
 #gachaOverlay.show{display:flex;}
-.go-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,#3a0020,#080010);}
+#gachaOverlay.shake{animation:goShake .4s ease-out;}
+@keyframes goShake{0%,100%{transform:translate(0,0);}15%{transform:translate(-8px,5px);}30%{transform:translate(7px,-4px);}45%{transform:translate(-5px,6px);}60%{transform:translate(6px,-3px);}75%{transform:translate(-4px,2px);}90%{transform:translate(3px,-1px);}}
+
+/* 背景 */
+.go-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#1a0030,#050008);transition:background 1s;}
+#gachaOverlay.ssr .go-bg{background:radial-gradient(ellipse at 50% 30%,#3a0a00,#0a0400);}
+#gachaOverlay.sr  .go-bg{background:radial-gradient(ellipse at 50% 30%,#252000,#050500);}
+#gachaOverlay.r   .go-bg{background:radial-gradient(ellipse at 50% 30%,#001a38,#000510);}
+
+/* 星 */
 .go-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
 .gstar{position:absolute;border-radius:50%;background:white;animation:starT ease-in-out infinite alternate;}
-@keyframes starT{0%{opacity:.1;transform:scale(.6);}100%{opacity:1;transform:scale(1);}}
-.go-p1{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:20px;}
-.go-p1.hide{display:none;}
-.go-rays{position:absolute;width:300px;height:300px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0deg,rgba(255,183,197,.2) 8deg,transparent 18deg,rgba(255,220,100,.15) 28deg,transparent 40deg);animation:raysR 1.5s linear infinite;pointer-events:none;}
+@keyframes starT{0%{opacity:.05;transform:scale(.4);}100%{opacity:1;transform:scale(1.3);}}
+
+/* 爆発パーティクル */
+#goBurst{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.burst-p{position:absolute;border-radius:50%;pointer-events:none;animation:burstFly var(--bd,0.8s) var(--bde,0s) ease-out both;}
+@keyframes burstFly{
+  0%{transform:translate(0,0) scale(1);opacity:1;}
+  100%{transform:translate(var(--bx,0px),var(--by,0px)) scale(0);opacity:0;}
+}
+
+/* 光線 */
+.go-rays{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .6s;}
+.go-rays::before{content:'';position:absolute;inset:0;background:conic-gradient(from 0deg,transparent 0deg,rgba(255,255,255,.06) 5deg,transparent 12deg,rgba(255,255,255,.03) 20deg,transparent 28deg);animation:raysR 6s linear infinite;}
+#gachaOverlay.ssr .go-rays{opacity:1;}
+#gachaOverlay.ssr .go-rays::before{background:conic-gradient(from 0deg,transparent 0deg,rgba(255,215,0,.22) 5deg,transparent 12deg,rgba(255,165,0,.12) 20deg,transparent 28deg);}
+#gachaOverlay.sr  .go-rays{opacity:1;}
+#gachaOverlay.sr  .go-rays::before{background:conic-gradient(from 0deg,transparent 0deg,rgba(180,255,80,.15) 5deg,transparent 12deg,rgba(100,255,200,.08) 20deg,transparent 28deg);}
 @keyframes raysR{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
-.go-orb{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.9),rgba(255,220,230,.7) 40%,rgba(255,150,180,.4) 70%);border:4px solid rgba(255,183,197,.7);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:36px;animation:orbGlow 1s ease-in-out infinite alternate;}
-@keyframes orbGlow{0%{box-shadow:0 0 20px rgba(255,183,197,.5);}100%{box-shadow:0 0 50px rgba(255,183,197,1);}}
-.go-susp{color:rgba(255,255,255,.7);font-size:14px;font-weight:900;letter-spacing:4px;animation:suspP .8s ease-in-out infinite;}
-@keyframes suspP{0%,100%{opacity:.3;}50%{opacity:1;}}
-.go-p2{position:relative;z-index:2;display:none;animation:resIn .5s cubic-bezier(.34,1.56,.64,1) both;}
-@keyframes resIn{0%{transform:scale(0) rotate(-15deg);opacity:0;}100%{transform:scale(1);opacity:1;}}
-.go-p2.show{display:block;}
-.go-card{background:white;border-radius:28px;padding:26px 22px 20px;box-shadow:0 20px 60px rgba(0,0,0,.45);max-width:300px;width:90vw;text-align:center;}
-.res-sparks{font-size:20px;letter-spacing:4px;margin-bottom:10px;animation:sparkA .8s ease-in-out infinite alternate;}
-@keyframes sparkA{0%{transform:scale(.9);}100%{transform:scale(1.1);}}
-.res-icon{width:100px;height:100px;margin:0 auto 12px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;overflow:hidden;}
-.res-icon::after{content:'';position:absolute;top:10px;left:18px;width:22px;height:12px;background:rgba(255,255,255,.5);border-radius:50%;transform:rotate(-30deg);}
-.bg-N{background:linear-gradient(135deg,#f0f0f0,#ddd);}.bg-R{background:linear-gradient(135deg,#D6EEFF,#89C4E1);}
-.bg-SR{background:linear-gradient(135deg,#FFF5CC,#FFD43B);}.bg-SSR{background:linear-gradient(135deg,#FFE0E0,#E63946);}
+
+/* フェーズ1: ガチャポン回転 */
+.go-p1{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.go-p1.hide{display:none;}
+.go-machine-wrap{position:relative;display:flex;flex-direction:column;align-items:center;}
+.go-orb-big{font-size:90px;animation:orbSpin .25s ease-in-out infinite alternate;}
+@keyframes orbSpin{0%{transform:scale(.95) rotate(-5deg);}100%{transform:scale(1.05) rotate(5deg);}}
+.go-susp{color:rgba(255,255,255,.85);font-size:14px;font-weight:900;letter-spacing:3px;animation:suspP .6s ease-in-out infinite;margin-top:4px;}
+@keyframes suspP{0%,100%{opacity:.2;}50%{opacity:1;}}
+.go-count-ring{position:relative;width:110px;height:110px;margin:0 auto;}
+.go-count-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.go-count-ring .ring-bg{stroke:rgba(255,255,255,.15);fill:none;stroke-width:5;}
+.go-count-ring .ring-fg{stroke:#FFB7C5;fill:none;stroke-width:5;stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset .1s linear;}
+.go-orb-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;}
+
+/* フェーズ2: カード表示 */
+.go-p2{position:relative;z-index:2;display:none;flex-direction:column;align-items:center;width:100%;}
+.go-p2.show{display:flex;}
+
+/* フラッシュ */
+#goFlash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:10;}
+#goFlash.bang-n {background:rgba(200,230,255,.95);animation:flashBang .35s ease-out both;}
+#goFlash.bang-r {background:rgba(100,200,255,.95);animation:flashBang .4s ease-out both;}
+#goFlash.bang-sr{background:rgba(255,255,100,.98);animation:flashBang .5s ease-out both;}
+#goFlash.bang-ssr{background:linear-gradient(45deg,#FFD700,#FF6600,#FF0000,#FFD700);animation:flashBangSSR .7s ease-out both;}
+@keyframes flashBang{0%{opacity:1;}100%{opacity:0;}}
+@keyframes flashBangSSR{0%{opacity:1;filter:brightness(2);}50%{opacity:.8;filter:brightness(1.5);}100%{opacity:0;}}
+
+/* カード本体 */
+.go-card{background:white;border-radius:28px;padding:22px 20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.6);max-width:300px;width:86vw;text-align:center;position:relative;overflow:hidden;}
+.go-card.reveal{animation:cardReveal .6s cubic-bezier(.22,1.5,.36,1) both;}
+@keyframes cardReveal{
+  0%{transform:scale(0) rotateY(90deg);opacity:0;}
+  50%{transform:scale(1.08) rotateY(-5deg);opacity:1;}
+  75%{transform:scale(.97) rotateY(2deg);}
+  100%{transform:scale(1) rotateY(0deg);opacity:1;}
+}
+.go-card-glow{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s;}
+#gachaOverlay.ssr .go-card-glow{background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,80,0,.1));opacity:1;}
+#gachaOverlay.sr  .go-card-glow{background:linear-gradient(135deg,rgba(150,255,100,.15),rgba(50,200,150,.08));opacity:1;}
+#gachaOverlay.r   .go-card-glow{background:linear-gradient(135deg,rgba(100,200,255,.12),transparent);opacity:1;}
+
+/* カード内コンテンツ */
+.res-sparks{font-size:22px;letter-spacing:5px;margin-bottom:8px;animation:sparkA .5s ease-in-out infinite alternate;}
+@keyframes sparkA{0%{transform:scale(.8);}100%{transform:scale(1.2);}}
+.res-icon{width:100px;height:100px;margin:0 auto 10px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative;overflow:hidden;}
+.res-icon::after{content:'';position:absolute;top:8px;left:16px;width:22px;height:12px;background:rgba(255,255,255,.6);border-radius:50%;transform:rotate(-30deg);}
+.bg-N{background:linear-gradient(135deg,#f0f0f0,#d0d0d0);}
+.bg-R{background:linear-gradient(135deg,#b8e0ff,#6ab4e8);}
+.bg-SR{background:linear-gradient(135deg,#fff3a0,#f5c400);animation:srIconGlow 1.2s ease-in-out infinite alternate;}
+@keyframes srIconGlow{0%{box-shadow:0 0 8px rgba(245,196,0,.5);}100%{box-shadow:0 0 24px rgba(245,196,0,.9);}}
+.bg-SSR{background:linear-gradient(135deg,#ffe0e0,#e82020);animation:ssrIconPulse 1s ease-in-out infinite alternate;}
+@keyframes ssrIconPulse{0%{box-shadow:0 0 0 0 rgba(232,32,32,.5),0 0 20px rgba(255,120,0,.3);}100%{box-shadow:0 0 0 14px rgba(232,32,32,0),0 0 40px rgba(255,80,0,.6);}}
 .res-rar{font-size:12px;font-weight:900;letter-spacing:3px;margin-bottom:4px;}
-.res-name{font-size:19px;font-weight:900;color:#222;margin-bottom:4px;}
-.res-desc{font-size:11px;color:#aaa;margin-bottom:18px;line-height:1.5;}
-.res-close{width:100%;border:none;border-radius:16px;padding:14px;cursor:pointer;font-size:15px;font-weight:900;color:white;background:linear-gradient(135deg,#FFB7C5,#E8729A);}
-.res-skip{width:100%;border:2px solid rgba(255,183,197,.4);background:rgba(255,183,197,.08);border-radius:16px;padding:10px;cursor:pointer;font-size:12px;font-weight:900;color:#E8729A;margin-top:8px;display:none;}
+.res-rar.new-badge::after{content:' NEW!';background:#FF3366;color:white;font-size:8px;padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:middle;animation:newBlink .8s ease-in-out infinite alternate;}
+@keyframes newBlink{0%{opacity:.5;}100%{opacity:1;}}
+.res-name{font-size:18px;font-weight:900;color:#222;margin-bottom:3px;}
+.res-desc{font-size:11px;color:#aaa;margin-bottom:16px;line-height:1.5;}
+
+/* ボタン */
+.res-close{width:100%;border:none;border-radius:16px;padding:14px;cursor:pointer;font-size:15px;font-weight:900;color:white;background:linear-gradient(135deg,#FFB7C5,#E8729A);transition:transform .1s,box-shadow .1s;}
+.res-close:active{transform:scale(.96);}
+.res-skip{width:100%;border:2px solid rgba(255,183,197,.5);background:rgba(255,183,197,.1);border-radius:16px;padding:10px;cursor:pointer;font-size:12px;font-weight:900;color:#E8729A;margin-top:8px;display:none;}
+
+/* SSR専用演出 */
+.go-ssr-banner{position:absolute;inset:0;pointer-events:none;z-index:5;display:none;align-items:center;justify-content:center;overflow:hidden;}
+.go-ssr-banner.show{display:flex;}
+.ssr-rainbow{position:absolute;inset:0;background:linear-gradient(45deg,#ff000055,#ff980055,#ffff0055,#00ff0055,#0080ff55,#8000ff55);animation:rainbowFlow 1.5s linear infinite;background-size:400% 400%;}
+@keyframes rainbowFlow{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.ssr-text{font-size:32px;font-weight:900;color:white;letter-spacing:4px;text-shadow:0 0 20px #FFD700,0 0 40px #FF6600,0 4px 8px rgba(0,0,0,.8);animation:ssrTextPop .5s cubic-bezier(.22,1.5,.36,1) both;}
+@keyframes ssrTextPop{0%{transform:scale(0) rotate(-10deg);opacity:0;}60%{transform:scale(1.15) rotate(3deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
+
+/* 10連まとめ */
+.go-summary{display:none;max-width:360px;width:94vw;animation:cardReveal .5s cubic-bezier(.22,1.5,.36,1) both;}
+.go-summary.show{display:block;}
+.go-sum-title{color:white;font-size:14px;font-weight:900;text-align:center;letter-spacing:2px;margin-bottom:10px;text-shadow:0 2px 8px rgba(0,0,0,.5);}
+.go-sum-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:rgba(255,255,255,.07);border-radius:20px;padding:12px;}
+.go-sum-item{border-radius:12px;padding:8px 3px 6px;text-align:center;position:relative;animation:sumItemPop .4s cubic-bezier(.22,1.5,.36,1) both;}
+@keyframes sumItemPop{0%{transform:scale(0);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.si-N{background:rgba(200,200,200,.2);}
+.si-R{background:rgba(106,207,255,.25);}
+.si-SR{background:rgba(255,210,40,.3);animation:ssrSumP .9s ease-in-out infinite alternate;}
+.si-SSR{background:rgba(232,32,32,.35);animation:ssrSumP .7s ease-in-out infinite alternate;}
+@keyframes ssrSumP{0%{box-shadow:0 0 0 0 rgba(255,200,0,.6);}100%{box-shadow:0 0 0 6px rgba(255,200,0,0);}}
+.si-em{font-size:24px;display:block;}
+.si-name{font-size:7px;color:rgba(255,255,255,.75);font-weight:900;display:block;margin-top:3px;line-height:1.2;word-break:break-all;}
+.si-rar{font-size:6px;opacity:.7;display:block;}
+.si-new{position:absolute;top:2px;right:2px;background:#FF3366;color:white;font-size:5px;font-weight:900;padding:1px 3px;border-radius:4px;}
+.go-sum-close{display:block;width:100%;margin-top:12px;background:linear-gradient(135deg,#FFB7C5,#E8729A);border:none;border-radius:16px;padding:13px;color:white;font-size:14px;font-weight:900;cursor:pointer;letter-spacing:2px;box-shadow:0 6px 20px rgba(232,114,154,.5);}
+.go-sum-close:active{transform:scale(.97);}
 
 /* ── MOLE OVERLAY ── */
 #moleOverlay{position:fixed;inset:0;z-index:800;display:none;flex-direction:column;align-items:center;overflow:hidden;
@@ -760,13 +865,29 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 <div id="gachaOverlay">
   <div class="go-bg"></div>
   <div class="go-stars" id="goStars"></div>
+  <div class="go-rays"></div>
+  <div id="goBurst"></div>
+  <div id="goFlash"></div>
+
+  <!-- SSR専用バナー -->
+  <div class="go-ssr-banner" id="goSsrBanner">
+    <div class="ssr-rainbow"></div>
+    <div class="ssr-text">✨ 超レア！ ✨</div>
+  </div>
+
+  <!-- フェーズ1: ガチャポン回転中 -->
   <div class="go-p1" id="goP1">
-    <div class="go-rays"></div>
-    <div class="go-orb" id="goOrb">🎰</div>
+    <div class="go-count-ring">
+      <svg viewBox="0 0 110 110"><circle class="ring-bg" cx="55" cy="55" r="50"/><circle class="ring-fg" id="goRingFg" cx="55" cy="55" r="50"/></svg>
+      <div class="go-orb-center" id="goOrb">🎰</div>
+    </div>
     <div class="go-susp" id="goSusp">ドキドキ…</div>
   </div>
+
+  <!-- フェーズ2: 結果カード -->
   <div class="go-p2" id="goP2">
-    <div class="go-card">
+    <div class="go-card" id="goCard">
+      <div class="go-card-glow"></div>
       <div class="res-sparks" id="resSparks">✨✨✨</div>
       <div class="res-icon bg-N" id="resIcon"><span id="resEmoji">🌸</span></div>
       <div class="res-rar" id="resRar" style="color:#E8729A">★★ RARE</div>
@@ -774,6 +895,12 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
       <div class="res-desc" id="resDesc">説明</div>
       <button class="res-close" id="resClose" onclick="nextGacha()">やった！GET！</button>
       <button class="res-skip" id="resSkip" onclick="skipGacha()">まとめて見る ⏩</button>
+    </div>
+    <!-- 10連まとめ -->
+    <div class="go-summary" id="goSummary">
+      <div class="go-sum-title">🎉 10連ガチャ 結果発表！</div>
+      <div class="go-sum-grid" id="goSumGrid"></div>
+      <button class="go-sum-close" onclick="closeGacha()">とじる</button>
     </div>
   </div>
 </div>
@@ -1121,6 +1248,7 @@ const SPOTS = [
   {id:'chachahouse', name:'茶々家',               icon:'🍵', pt:100, item:'つばきの花',        lat:31.823, lng:129.743, area:'長浜地区', desc:'甑島の人気スポット「茶々家（ちゃちゃハウス）」。島の雰囲気たっぷりのお店。'},
   {id:'kaisei_j',   name:'海星中学校',          icon:'🏫', pt:80,  item:'ウミネコの羽',     lat:31.824, lng:129.743, area:'青瀬地区', desc:'甑島の中学生が学ぶ学校。島の未来を担う生徒たちが毎日通っている。'},
   {id:'yoshinaga',  name:'吉永酒造',              icon:'🍶', pt:130, item:'甑州の空き瓶',           lat:31.823, lng:129.743, area:'手打地区', desc:'甑島の地酒を造る老舗酒造。島の文化と伝統を守り続ける。'},
+  {id:'teutchi_sho',name:'手打小学校',            icon:'🏫', pt:80,  item:'キビナゴせんぱい',        lat:31.728, lng:129.719, area:'手打地区', desc:'手打地区にある小学校。島の子どもたちが元気に学んでいる。'},
 ];
 
 // ═══════════════════════
@@ -1215,74 +1343,319 @@ function doGacha(n){
   var cost=n===1?100:800;
   if(S.points<cost){ showToast('⚠️ ポイントが足りない！ゲームやスポットでポイントを集めよう'); return; }
   S.points-=cost; updateUI();
-  
-  
   gQueue=[]; gResults=[];
   for(var i=0;i<n;i++) gQueue.push(pickItem());
   showGachaOverlay();
 }
+
+function gachaSound(type){
+  try{
+    var ac=getAC(); if(!ac) return;
+    if(type==='spin'){
+      // ガラガラ回転音
+      [0,80,160,240,320].forEach(function(d){
+        setTimeout(function(){
+          var o=ac.createOscillator(); var g=ac.createGain();
+          o.connect(g); g.connect(ac.destination);
+          o.type='sawtooth'; o.frequency.value=200+Math.random()*300;
+          g.gain.setValueAtTime(.08,ac.currentTime);
+          g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.08);
+          o.start(); o.stop(ac.currentTime+.08);
+        },d);
+      });
+    } else if(type==='flash'){
+      // フラッシュ音（ドカン）
+      var o=ac.createOscillator(); var g=ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.type='sine'; o.frequency.setValueAtTime(80,ac.currentTime);
+      o.frequency.exponentialRampToValueAtTime(40,ac.currentTime+.3);
+      g.gain.setValueAtTime(.6,ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.4);
+      o.start(); o.stop(ac.currentTime+.4);
+    } else if(type==='ssr'){
+      // SSR特別ファンファーレ
+      var notes=[523,659,784,1047,1319];
+      notes.forEach(function(freq,i){
+        setTimeout(function(){
+          var o=ac.createOscillator(); var g=ac.createGain();
+          o.connect(g); g.connect(ac.destination);
+          o.type='triangle'; o.frequency.value=freq;
+          g.gain.setValueAtTime(.3,ac.currentTime);
+          g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.18);
+          o.start(); o.stop(ac.currentTime+.2);
+        },i*120);
+      });
+    } else if(type==='sr'){
+      // SR明るい音
+      var notes=[440,554,659];
+      notes.forEach(function(freq,i){
+        setTimeout(function(){
+          var o=ac.createOscillator(); var g=ac.createGain();
+          o.connect(g); g.connect(ac.destination);
+          o.type='sine'; o.frequency.value=freq;
+          g.gain.setValueAtTime(.25,ac.currentTime);
+          g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.2);
+          o.start(); o.stop(ac.currentTime+.22);
+        },i*100);
+      });
+    } else if(type==='r'){
+      playTone(440,.15,.2);
+    } else if(type==='n'){
+      playTone(330,.1,.15);
+    } else if(type==='get'){
+      // ゲット音（ポン！）
+      var o=ac.createOscillator(); var g=ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.type='sine'; o.frequency.setValueAtTime(600,ac.currentTime);
+      o.frequency.exponentialRampToValueAtTime(900,ac.currentTime+.06);
+      g.gain.setValueAtTime(.25,ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.15);
+      o.start(); o.stop(ac.currentTime+.15);
+    }
+  }catch(e){}
+}
+
+function spawnBurst(rarity){
+  var el=$('goBurst'); if(!el) return;
+  el.innerHTML='';
+  var colors={SSR:['#FFD700','#FF6600','#FF0000','#FFFFFF','#FF8C00'],SR:['#AAFF44','#00FFAA','#FFFF00','#FFFFFF'],R:['#66CCFF','#AADDFF','#FFFFFF'],N:['#CCCCCC','#FFFFFF','#AAAAAA']};
+  var cls=colors[rarity]||colors.N;
+  var cx=window.innerWidth/2, cy=window.innerHeight/2;
+  var cnt={SSR:40,SR:28,R:18,N:10}[rarity]||10;
+  for(var i=0;i<cnt;i++){
+    var p=document.createElement('div'); p.className='burst-p';
+    var angle=Math.random()*Math.PI*2;
+    var dist=80+Math.random()*180;
+    var bx=Math.cos(angle)*dist, by=Math.sin(angle)*dist;
+    var sz=4+Math.random()*8;
+    var col=cls[Math.floor(Math.random()*cls.length)];
+    var dur=0.5+Math.random()*0.5;
+    var delay=Math.random()*0.15;
+    p.style.cssText='width:'+sz+'px;height:'+sz+'px;background:'+col+';left:'+cx+'px;top:'+cy+'px;--bx:'+bx+'px;--by:'+by+'px;--bd:'+dur+'s;--bde:'+delay+'s;box-shadow:0 0 '+sz+'px '+col;
+    el.appendChild(p);
+  }
+  setTimeout(function(){el.innerHTML='';},1200);
+}
+
+function doFlash(rarity){
+  var fl=$('goFlash'); if(!fl) return;
+  fl.className='';
+  var cls={SSR:'bang-ssr',SR:'bang-sr',R:'bang-r',N:'bang-n'}[rarity]||'bang-n';
+  void fl.offsetWidth;
+  fl.className=cls;
+  setTimeout(function(){fl.className='';},800);
+}
+
 function showGachaOverlay(){
-  $('gachaOverlay').classList.add('show');
+  var ov=$('gachaOverlay');
+  ov.className='show';
   $('goP1').classList.remove('hide');
   $('goP2').classList.remove('show');
-  var caps=['🔴','🟡','🔵','🟢','🟠'];
-  var ci=0, si=0;
-  var susps=['ドキドキ…','まわってる…','何が出るかな？','でてこーい！'];
-  var cI=setInterval(function(){$('goOrb').textContent=caps[ci++%caps.length];},200);
+  $('goCard').classList.remove('reveal');
+  $('goSummary').classList.remove('show');
+  $('goSsrBanner').classList.remove('show');
+
+  var caps=['🎰','🔴','🟡','🔵','🟢','🟠','🔴','🟡'];
+  var susps=['ドキドキ…','まわってる…','何が出るかな？','でてこーい！','もうすぐ…！'];
+  var ci=0,si=0,elapsed=0;
+  var duration=2000;
+  var ring=$('goRingFg');
+
+  gachaSound('spin');
+  var cI=setInterval(function(){$('goOrb').textContent=caps[ci++%caps.length];},160);
   var sI=setInterval(function(){$('goSusp').textContent=susps[si++%susps.length];},500);
+  var rI=setInterval(function(){
+    elapsed+=50;
+    if(ring) ring.style.strokeDashoffset=314*(1-elapsed/duration);
+  },50);
+
   setTimeout(function(){
-    clearInterval(cI); clearInterval(sI);
+    clearInterval(cI); clearInterval(sI); clearInterval(rI);
+    if(ring) ring.style.strokeDashoffset=0;
+    $('goSusp').textContent='でた！！';
     showNextResult();
-  },1800);
+  },duration);
 }
+
 function showNextResult(){
   if(!gQueue.length) return;
   var it=gQueue.shift();
   gResults.push(it);
-  if(S.items[it[0]]) S.items[it[0]].cnt++;
+
+  var isNew=false;
+  if(S.items[it[0]]){S.items[it[0]].cnt++;}else{isNew=true;}
   var expGain={SSR:80,SR:40,R:20,N:8}[it[2]]||8;
   addExp(expGain);
   renderZukan();
-  var sparks={SSR:'🌟✨💫🌟✨',SR:'✨⭐✨⭐',R:'✨💕✨',N:'✨'}[it[2]];
+
+  // レア度クラスセット
+  var ov=$('gachaOverlay');
+  ov.classList.remove('ssr','sr','r','n');
+  var rarCls={SSR:'ssr',SR:'sr',R:'r',N:'n'}[it[2]]||'n';
+  ov.classList.add(rarCls);
+
+  // エフェクト
+  if(it[2]==='SSR'){
+    $('goSsrBanner').classList.add('show');
+    setTimeout(function(){$('goSsrBanner').classList.remove('show');},1200);
+    gachaSound('ssr');
+    setTimeout(function(){doFlash('SSR');spawnBurst('SSR');},200);
+    // シェイク
+    setTimeout(function(){
+      ov.classList.add('shake');
+      setTimeout(function(){ov.classList.remove('shake');},500);
+    },300);
+  } else if(it[2]==='SR'){
+    gachaSound('sr');
+    setTimeout(function(){doFlash('SR');spawnBurst('SR');},150);
+  } else if(it[2]==='R'){
+    gachaSound('r');
+    setTimeout(function(){doFlash('R');spawnBurst('R');},100);
+  } else {
+    gachaSound('n');
+    doFlash('N'); spawnBurst('N');
+  }
+
+  // カード内容セット
+  var sparks={SSR:'🌟✨💫🌟✨💫',SR:'✨⭐✨⭐✨',R:'✨💕✨💕',N:'✨'}[it[2]];
   $('resSparks').textContent=sparks;
   $('resIcon').className='res-icon bg-'+it[2];
   $('resEmoji').textContent=it[1];
-  $('resRar').textContent=it[3]; $('resRar').style.color=it[4];
+  $('resRar').textContent=it[3];
+  $('resRar').style.color=it[4];
+  if(isNew) $('resRar').classList.add('new-badge');
+  else $('resRar').classList.remove('new-badge');
   $('resName').textContent=it[0];
-  var descs={SSR:'伝説級！甑島の奇跡！！',SR:'超レア！カノコユリッピーが大喜び！',R:'レアアイテム！育成に役立つよ！',N:'育成アイテム。集めよう！'};
+  var descs={SSR:'🏆 伝説級！甑島の奇跡！！',SR:'💎 超レア！カノコユリッピーが大喜び！',R:'🌸 レアアイテム！育成に役立つよ！',N:'🌿 育成アイテム。コツコツ集めよう！'};
   $('resDesc').textContent=descs[it[2]];
+
   var btn=$('resClose'); var skip=$('resSkip');
-  btn.textContent=gQueue.length>0?'次へ →':'やった！GET！';
+  btn.textContent=gQueue.length>0?'次へ →（残り'+gQueue.length+'個）':'やった！GET！';
   skip.style.display=gQueue.length>0?'block':'none';
-  if(skip.style.display==='block') skip.textContent='まとめて見る ⏩ (残り'+gQueue.length+'個)';
+  if(skip.style.display==='block') skip.textContent='まとめて見る ⏩';
+
+  // カード表示
   $('goP1').classList.add('hide');
   $('goP2').classList.add('show');
+  var card=$('goCard');
+  card.classList.remove('reveal');
+  void card.offsetWidth;
+  card.classList.add('reveal');
 }
+
 function nextGacha(){
   if(gQueue.length>0){
+    $('goSsrBanner').classList.remove('show');
     $('goP1').classList.remove('hide');
     $('goP2').classList.remove('show');
-    setTimeout(showNextResult,1600);
+    gachaSound('get');
+    var duration=1600;
+    var elapsed=0;
+    var ring=$('goRingFg');
+    if(ring) ring.style.strokeDashoffset=314;
+    var caps=['🎰','🔴','🟡','🔵','🟢','🟠'];
+    var ci=0,si=0;
+    var susps=['ドキドキ…','まわってる…','何が出るかな？','でてこーい！'];
+    var cI2=setInterval(function(){$('goOrb').textContent=caps[ci++%caps.length];},160);
+    var sI2=setInterval(function(){$('goSusp').textContent=susps[si++%susps.length];},500);
+    var rI2=setInterval(function(){
+      elapsed+=50;
+      if(ring) ring.style.strokeDashoffset=314*(1-elapsed/duration);
+    },50);
+    gachaSound('spin');
+    setTimeout(function(){
+      clearInterval(cI2); clearInterval(sI2); clearInterval(rI2);
+      if(ring) ring.style.strokeDashoffset=0;
+      $('goSusp').textContent='でた！！';
+      showNextResult();
+    },duration);
   } else {
-    $('gachaOverlay').classList.remove('show');
+    // 全部見た → 10連の場合まとめ、1回はそのまま閉じる
+    gachaSound('get');
+    if(gResults.length>=2){
+      showGachaSummary();
+    } else {
+      closeGacha();
+    }
   }
 }
+
+function showGachaSummary(){
+  $('goCard').style.display='none';
+  var grid=$('goSumGrid');
+  grid.innerHTML='';
+  var ov=$('gachaOverlay');
+  ov.classList.remove('ssr','sr','r','n');
+  // SSRが含まれていたら派手に
+  var hasSSR=gResults.some(function(r){return r[2]==='SSR';});
+  var hasSR=gResults.some(function(r){return r[2]==='SR';});
+  if(hasSSR){ov.classList.add('ssr'); gachaSound('ssr');}
+  else if(hasSR){ov.classList.add('sr'); gachaSound('sr');}
+
+  gResults.forEach(function(it,idx){
+    var div=document.createElement('div');
+    div.className='go-sum-item si-'+it[2];
+    div.style.animationDelay=(idx*0.06)+'s';
+    // NEWバッジ
+    var isNewItem=!S.items[it[0]]||S.items[it[0]].cnt<=1;
+    div.innerHTML='<span class="si-em">'+it[1]+'</span>'
+      +'<span class="si-name">'+it[0]+'</span>'
+      +'<span class="si-rar" style="color:'+it[4]+'">'+it[3]+'</span>'
+      +(isNewItem?'<span class="si-new">NEW</span>':'');
+    grid.appendChild(div);
+  });
+  $('goSummary').classList.add('show');
+}
+
 function skipGacha(){
   while(gQueue.length>0){
     var it=gQueue.shift(); gResults.push(it);
     if(S.items[it[0]]) S.items[it[0]].cnt++;
+    else{}
     addExp({SSR:80,SR:40,R:20,N:8}[it[2]]||8);
   }
-  renderZukan();
-  $('gachaOverlay').classList.remove('show');
-  showToast('🎉 アイテムをGET！図鑑を確認しよう');
+  renderZukan(); saveState();
+  if(gResults.length>=2){
+    $('goCard').style.display='none';
+    var grid=$('goSumGrid');
+    grid.innerHTML='';
+    var ov=$('gachaOverlay');
+    ov.classList.remove('ssr','sr','r','n');
+    var hasSSR=gResults.some(function(r){return r[2]==='SSR';});
+    if(hasSSR){ov.classList.add('ssr');}
+    gResults.forEach(function(it,idx){
+      var div=document.createElement('div');
+      div.className='go-sum-item si-'+it[2];
+      div.style.animationDelay=(idx*0.06)+'s';
+      div.innerHTML='<span class="si-em">'+it[1]+'</span>'
+        +'<span class="si-name">'+it[0]+'</span>'
+        +'<span class="si-rar" style="color:'+it[4]+'">'+it[3]+'</span>';
+      grid.appendChild(div);
+    });
+    $('goP1').classList.add('hide');
+    $('goP2').classList.add('show');
+    $('goSummary').classList.add('show');
+  } else {
+    closeGacha();
+  }
 }
+
+function closeGacha(){
+  var ov=$('gachaOverlay');
+  ov.classList.remove('show');
+  $('goCard').style.display='';
+  $('goSummary').classList.remove('show');
+  $('goSsrBanner').classList.remove('show');
+  showToast('🎉 アイテムをGET！図鑑を確認しよう');
+  saveState();
+}
+
 function genStars(){
   var w=$('goStars'); if(!w) return;
-  for(var i=0;i<50;i++){
+  for(var i=0;i<60;i++){
     var s=document.createElement('div'); s.className='gstar';
-    var sz=Math.random()*2.5+0.5;
-    s.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-duration:'+(.8+Math.random()*1.5)+'s;animation-delay:'+(Math.random()*2)+'s';
+    var sz=Math.random()*3+0.5;
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-duration:'+(.6+Math.random()*1.8)+'s;animation-delay:'+(Math.random()*3)+'s';
     w.appendChild(s);
   }
 }
@@ -1356,7 +1729,8 @@ function renderSpots() {
     var done = S.visitedSpots.has(sp.id);
     var d=document.createElement('div'); d.className='spot';
     var gmapUrl = 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(sp.name+' 甑島 鹿児島');
-    d.innerHTML='<div class="spot-ico">'+sp.icon+'</div>'
+    d.innerHTML=(done?'<div class="spot-stamp"><span class="stamp-lily">🌸</span><span class="stamp-text">訪問済</span></div>':'')
+      +'<div class="spot-ico">'+sp.icon+'</div>'
       +'<div class="spot-info">'
         +'<div class="spot-name">'+sp.name+'</div>'
         +'<div class="spot-area">'+sp.area+'</div>'
@@ -1377,8 +1751,11 @@ function renderSpots() {
 function openSpotModal(sp) {
   var done = S.visitedSpots.has(sp.id);
   var mi=$('spotModal'); if(!mi) return;
-  $('spotModalImg').textContent = sp.icon;
-  $('spotModalImg').style.fontSize = '64px';
+  var imgEl=$('spotModalImg');
+  imgEl.innerHTML='<span style="font-size:64px">'+sp.icon+'</span>'
+    +(done?'<div class="spot-modal-stamp"><span class="stamp-lily">🌸</span><span class="stamp-text">訪問済！</span></div>':'');
+  imgEl.style.fontSize='';
+  imgEl.style.position='relative';
   $('spotModalArea').textContent = sp.area;
   $('spotModalName').textContent = sp.name;
   $('spotModalDesc').textContent = sp.desc;
@@ -1423,6 +1800,21 @@ function collectSpot(){
   if(S.items[sp[4]]) S.items[sp[4]].cnt++;
   addExp(Math.floor(sp[3]/5));
   renderZukan(); renderSpots();
+  // 新規訪問のスタンプをポンとアニメ
+  if(!alreadyDone){
+    setTimeout(function(){
+      var cards=document.querySelectorAll('.spot-stamp');
+      // 該当スポットのカードを探してアニメ
+      var list=document.querySelectorAll('.spot');
+      list.forEach(function(c){
+        var nameEl=c.querySelector('.spot-name');
+        if(nameEl && nameEl.textContent===sp[1]){
+          var stamp=c.querySelector('.spot-stamp');
+          if(stamp){ stamp.classList.add('pop'); }
+        }
+      });
+    },100);
+  }
   closeQR();
   spark(window.innerWidth/2,window.innerHeight/3);
   showToast('🎉 '+sp[1]+' で +'+sp[3]+' pt GET！');
@@ -1484,6 +1876,7 @@ function closeMole(){
 var ML={score:0,combo:0,fever:false,timer:20,iv:null,tv:null,holes:[],active:new Set(),feverT:null};
 
 function startMoleCountdown(){
+  wakeAC(); // AudioContext を2回目以降も確実に起動
   $('mIntro').style.display='none';
   $('mResult').classList.remove('show');
   var cd=$('moleCountdown'); cd.classList.add('show');
@@ -1674,6 +2067,11 @@ var RIMG = {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━
 var AC=null;
 function getAC(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}if(AC.state==='suspended')AC.resume();return AC;}
+function wakeAC(cb){
+  if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){if(cb)cb();return;}}
+  if(AC.state==='running'){if(cb)cb();return;}
+  AC.resume().then(function(){if(cb)cb();}).catch(function(){if(cb)cb();});
+}
 function playTone(freq,dur,vol,type,decay){var ac=getAC();if(!ac)return;var o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type=type||'sine';o.frequency.setValueAtTime(freq,ac.currentTime);g.gain.setValueAtTime(vol||.3,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+(decay||dur));o.start(ac.currentTime);o.stop(ac.currentTime+dur);}
 function playNoise(dur,vol,ff){var ac=getAC();if(!ac)return;var bs=ac.sampleRate*dur,buf=ac.createBuffer(1,bs,ac.sampleRate),d=buf.getChannelData(0);for(var i=0;i<bs;i++)d[i]=Math.random()*2-1;var src=ac.createBufferSource();src.buffer=buf;var flt=ac.createBiquadFilter();flt.type='bandpass';flt.frequency.value=ff||400;var g=ac.createGain();g.gain.setValueAtTime(vol||.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dur);src.connect(flt);flt.connect(g);g.connect(ac.destination);src.start();src.stop(ac.currentTime+dur);}
 function sndPerfect(){playTone(523,.12,.25,'sine');setTimeout(function(){playTone(659,.12,.25,'sine');},60);setTimeout(function(){playTone(784,.18,.3,'sine');},120);setTimeout(function(){playTone(1047,.22,.35,'sine');},200);playNoise(.08,.06,800);}
@@ -2389,6 +2787,7 @@ function sndWatch(type) {
 #rgOverlay { position:fixed;inset:0;z-index:8500;flex-direction:column;background:#fffaf2;display:none; }
 #rgBar { position:fixed;top:0;top:env(safe-area-inset-top,0px);left:0;right:0;height:52px;background:rgba(232,87,142,0.97);display:flex;align-items:center;padding:0 14px;padding-top:env(safe-area-inset-top,0px);z-index:99999;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.2); }
 #rgContainer { position:fixed;top:52px;top:calc(52px + env(safe-area-inset-top,0px));left:0;right:0;bottom:0;overflow:hidden;background:#fffaf2;z-index:8501; }
+#rgContainer.no-bar { top:0; }
 
 :root{
   --pink:#e8578e; --ink:#3a2a1e; --sea:#2f8fb5; --paper:#fffaf2;
@@ -2604,7 +3003,7 @@ function roundRect(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x
 
 /* ================= audio ================= */
 let ac,master,noiseBuf;
-function initAudio(){ if(ac) return; ac=new (window.AudioContext||window.webkitAudioContext)();
+function initAudio(){ if(ac){ if(ac.state==='suspended') ac.resume(); return; } ac=new (window.AudioContext||window.webkitAudioContext)();
   master=ac.createGain(); master.gain.value=0.6; master.connect(ac.destination); }
 function noise(){ if(noiseBuf) return noiseBuf; noiseBuf=ac.createBuffer(1,ac.sampleRate*0.5,ac.sampleRate);
   const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; return noiseBuf; }
@@ -2702,14 +3101,15 @@ const visNow = ()=>ctxNow()-start-OFF.vis/1000;      // for drawing
 const judgeNow = (ms)=>ctxNow(ms)-start-OFF.tap/1000; // for scoring taps
 
 function startGame(d){
-  diff=d; initAudio(); if(ac.state==='suspended') ac.resume();
+  diff=d; initAudio(); if(master) master.gain.setValueAtTime(0.6, ac.currentTime);
   song=buildSong(d);
   WIN_P = d==='easy'?0.18:0.14; WIN_G = d==='easy'?0.34:0.28; WIN_CATCH = d==='easy'?0.48:0.40;
   st={score:0,pts:0,combo:0,max:0,P:0,G:0,M:0,K:0,S:0,pose:'ready',poseUntil:0,fx:[],judge:null,shake:0,lastBubble:''};
   start=ac.currentTime+0.35; schedStep=0;
   clearInterval(schedTimer); schedTimer=setInterval(scheduler,25); scheduler();
   document.getElementById('rg_title').hidden=true; document.getElementById('rg_result').hidden=true;
-  document.getElementById('rgBar').style.display='none';
+  var rgB=document.getElementById('rgBar'); rgB.style.visibility='hidden'; rgB.style.pointerEvents='none';
+  document.getElementById('rgContainer').classList.add('no-bar');
   ['rg_hud','rg_bar','rg_bubble'].forEach(id=>document.getElementById(id).hidden=false);
   updHud(); running=true;
 }
@@ -2725,7 +3125,8 @@ function endGame(){
   document.getElementById('rg_rP').textContent=st.P; document.getElementById('rg_rG').textContent=st.G; document.getElementById('rg_rM').textContent=st.M; document.getElementById('rg_rC').textContent=st.max;
   const hasK=song.kanokoTotal>0; document.getElementById('rg_rKl').hidden=!hasK; document.getElementById('rg_rK').hidden=!hasK; document.getElementById('rg_rK').textContent=st.S+' / '+song.kanokoTotal;
   ['rg_hud','rg_bar','rg_bubble'].forEach(id=>document.getElementById(id).hidden=true);
-  document.getElementById('rgBar').style.display='';
+  var rgB=document.getElementById('rgBar'); rgB.style.visibility=''; rgB.style.pointerEvents='';
+  document.getElementById('rgContainer').classList.remove('no-bar');
   document.getElementById('rg_result').hidden=false; document.getElementById('rg_again').focus();
 }
 function updHud(){ st.score=Math.round(st.pts*100/song.total); document.getElementById('rg_score').firstChild.nodeValue=st.score; document.getElementById('rg_combo').firstChild.nodeValue=st.combo; document.getElementById('rg_combo').classList.toggle('on',st.combo>=3); }
@@ -2919,7 +3320,8 @@ document.getElementById('rg_again').addEventListener('click',()=>startGame(diff)
 document.getElementById('rg_quit').addEventListener('click',()=>{
   running=false; clearInterval(schedTimer); st.fx=[]; st.judge=null;
   ['rg_hud','rg_bar','rg_bubble'].forEach(id=>document.getElementById(id).hidden=true);
-  document.getElementById('rgBar').style.display='';
+  var rgBq=document.getElementById('rgBar'); rgBq.style.visibility=''; rgBq.style.pointerEvents='';
+  document.getElementById('rgContainer').classList.remove('no-bar');
   document.getElementById('rg_result').hidden=true; document.getElementById('rg_title').hidden=false;
 });
 document.getElementById('rg_toTitle').addEventListener('click',()=>{ document.getElementById('rg_result').hidden=true; document.getElementById('rg_title').hidden=false; });
@@ -2929,7 +3331,8 @@ Promise.all(Object.values(rg_IMG).map(im=>im.decode?im.decode().catch(()=>{}):0)
 
 window.closeRhythmGame=function(){
   running=false; clearInterval(schedTimer);
-  document.getElementById('rgBar').style.display='';
+  var rgBc=document.getElementById('rgBar'); rgBc.style.visibility=''; rgBc.style.pointerEvents='';
+  document.getElementById('rgContainer').classList.remove('no-bar');
   if(ac && master) master.gain.setValueAtTime(0.0001, ac.currentTime);
   document.getElementById('rgOverlay').style.display='none';
 };
