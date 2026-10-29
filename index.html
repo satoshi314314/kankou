@@ -990,7 +990,7 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
     <div style="font-size:0.75em;color:#888;margin-top:-8px;margin-bottom:4px;" id="mHitCount">撃退数: 0体</div>
     <div class="mole-rank" id="mResRank">C</div>
     <div class="m-reward"><p>獲得報酬</p><div class="m-reward-val" id="mRwVal">+0 pt / EXP +0</div></div>
-    <button class="pink-btn" onclick="startMoleCountdown()">もう一度！</button>
+    <button class="pink-btn" onclick="if(checkGameLimit('mole')) return; startMoleCountdown()">もう一度！</button>
     <button class="ghost-btn" onclick="closeMole()">ホームへ戻る</button>
   </div>
 </div>
@@ -1061,6 +1061,20 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
     <div class="qm-gain" id="qmGain">+150 pt</div>
     <div class="qm-item" id="qmItem">⭐ 星降る砂 をGET！</div>
     <button class="full-btn" onclick="collectSpot()">受け取る！</button>
+  </div>
+</div>
+
+<!-- GAME LIMIT MODAL -->
+<div id="gameLimitModal" style="position:fixed;inset:0;z-index:99999;display:none;align-items:flex-end;justify-content:center;padding-bottom:40px;background:rgba(0,0,0,0.5);" onclick="this.style.display='none'">
+  <div style="background:linear-gradient(160deg,#FFF0F5,#FFF9E6);border-radius:28px;padding:24px 20px 20px;max-width:320px;width:92vw;text-align:center;box-shadow:0 -4px 40px rgba(0,0,0,0.2);position:relative;" onclick="event.stopPropagation()">
+    <img src="" id="glRippieImg" style="width:90px;height:90px;object-fit:contain;margin-bottom:-10px;filter:drop-shadow(0 4px 8px rgba(255,183,197,.6));">
+    <!-- 吹き出し -->
+    <div style="position:relative;background:#fff;border:3px solid #E8729A;border-radius:20px;padding:16px 18px;margin-bottom:16px;">
+      <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:16px solid #E8729A;"></div>
+      <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:13px solid #fff;"></div>
+      <p id="glMessage" style="font-size:15px;font-weight:900;color:#c94f7a;margin:0;line-height:1.6;"></p>
+    </div>
+    <button onclick="document.getElementById('gameLimitModal').style.display='none'" style="background:linear-gradient(135deg,#E8729A,#c94f7a);color:white;border:none;border-radius:14px;padding:10px 32px;font-size:15px;font-weight:900;cursor:pointer;">わかった！</button>
   </div>
 </div>
 
@@ -1867,7 +1881,13 @@ function handleQRData(url){
     var spotId=u.searchParams.get('spot');
     if(spotId){
       var sp=SPOTS.find(function(s){return s.id===spotId;});
-      if(sp){ showSpotResult(sp); return; }
+      if(sp){
+        if(S.visitedSpots.has(sp.id)){
+          showToast('⚽ '+sp.name+' はもう済みだよ！');
+          return;
+        }
+        showSpotResult(sp); return;
+      }
     }
   }catch(e){}
   $('qmCamMsg').textContent='このQRコードは対応していません';
@@ -1951,14 +1971,50 @@ window.addEventListener('load', function(){
   var p=new URLSearchParams(location.search).get('spot');
   if(!p) return;
   var sp=SPOTS.find(function(s){return s.id===p;});
-  if(sp) setTimeout(function(){showSpotResult(sp);},600);
+  if(sp) setTimeout(function(){
+    if(S.visitedSpots.has(sp.id)){ showToast('⚽ '+sp.name+' はもう済みだよ！'); return; }
+    showSpotResult(sp);
+  },600);
 });
 
 // ═══════════════════════
 //  ENEMY / MOLE
 // ═══════════════════════
 function scheduleEnemy(){} // 一時オフ
+// ─── ゲーム回数制限（1日2回） ───────────────────────
+var GAME_LIMIT = 2;
+var GAME_LIMIT_MSGS = [
+  'ゲームばっかりしてないで\n旅に出るのじゃ〜！🌸\nスポットを回ってポイントGETしよう！',
+  'もうゲームは今日はおしまい！\n外に出て冒険するのじゃ〜！🦋\nQRコードをさがすのじゃ！',
+  'カノコユリッピーとの約束！\n今日のゲームはここまで〜！🌺\n島を探検してくるのじゃ！',
+];
+function getGameKey(type){
+  return 'gameCount_'+type+'_'+new Date().toLocaleDateString('ja-JP');
+}
+function getGameCount(type){
+  try{ return parseInt(localStorage.getItem(getGameKey(type))||'0',10); }catch(e){ return 0; }
+}
+function incGameCount(type){
+  try{ localStorage.setItem(getGameKey(type), getGameCount(type)+1); }catch(e){}
+}
+function checkGameLimit(type){
+  var cnt=getGameCount(type);
+  if(cnt>=GAME_LIMIT){
+    var msg=GAME_LIMIT_MSGS[Math.floor(Math.random()*GAME_LIMIT_MSGS.length)];
+    var modal=document.getElementById('gameLimitModal');
+    document.getElementById('glMessage').textContent=msg;
+    // カノコユリッピー画像をコピー
+    var rImg=document.getElementById('rippieImg');
+    if(rImg) document.getElementById('glRippieImg').src=rImg.src;
+    modal.style.display='flex';
+    return true; // ブロック
+  }
+  return false;
+}
+// ─────────────────────────────────────────────────────
+
 function openMole(){
+  if(checkGameLimit('mole')) return;
   $('moleOverlay').classList.add('show');
   $('mIntro').style.display='flex';
   $('mGame').style.display='none';
@@ -1973,6 +2029,7 @@ function closeMole(){
 var ML={score:0,combo:0,fever:false,timer:20,iv:null,tv:null,holes:[],active:new Set(),feverT:null};
 
 function startMoleCountdown(){
+  if(checkGameLimit('mole')) return;
   wakeAC(); // AudioContext を2回目以降も確実に起動
   $('mIntro').style.display='none';
   $('mResult').classList.remove('show');
@@ -1997,6 +2054,7 @@ function startMoleCountdown(){
 }
 
 function startMole(){
+  incGameCount('mole');
   ML.score=0; ML.combo=0; ML.fever=false; ML.timer=20; ML.active.clear();
   $('mScore').textContent=0; $('mTimer').textContent=20;
   $('mTimerBox').classList.remove('danger');
@@ -2331,6 +2389,8 @@ function rgBuildHoles(level) {
 
 // ── ゲーム開始（カウントダウン） ──
 function rgBeginGame() {
+  if(checkGameLimit('rhythm')) return;
+  incGameCount('rhythm');
   rgStopAll();
   var level = RG_LEVELS[RG.levelIdx];
   RG.level = level;
@@ -2829,7 +2889,7 @@ function sndWatch(type) {
         <p>獲得報酬</p>
         <div class="rg-reward-val" id="rgRRW">+0 pt / EXP +0</div>
       </div>
-      <button class="rg-again-btn"  onclick="rgBeginGame()">もう一度！</button>
+      <button class="rg-again-btn"  onclick="if(checkGameLimit('rhythm')) return; rgBeginGame()">もう一度！</button>
       <button class="rg-ghost-btn"  onclick="closeRhythm()">ホームへ</button>
     </div>
   </div>
@@ -3028,6 +3088,7 @@ button .sub{display:block;font-size:11px;font-weight:700;opacity:.85}
 <script>
 var _rgInited=false;
 function openRhythmGame(){
+  if(checkGameLimit('rhythm')) return;
   var ov=document.getElementById('rgOverlay');
   if(!ov) return;
   ov.style.display='flex';
@@ -3198,6 +3259,8 @@ const visNow = ()=>ctxNow()-start-OFF.vis/1000;      // for drawing
 const judgeNow = (ms)=>ctxNow(ms)-start-OFF.tap/1000; // for scoring taps
 
 function startGame(d){
+  if(checkGameLimit('spawn')) return;
+  incGameCount('spawn');
   diff=d; initAudio(); if(master) master.gain.setValueAtTime(0.6, ac.currentTime);
   song=buildSong(d);
   WIN_P = d==='easy'?0.18:0.14; WIN_G = d==='easy'?0.34:0.28; WIN_CATCH = d==='easy'?0.48:0.40;
@@ -3412,8 +3475,8 @@ function padTap(ms){
 }
 document.getElementById('rg_pad').addEventListener('pointerdown',e=>{ e.preventDefault(); padTap(evMs(e)); });
 document.getElementById('rg_pad').addEventListener('keydown',e=>{ if(e.code==='Space'||e.code==='Enter'){ e.preventDefault(); if(!e.repeat) padTap(evMs(e)); } });
-document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>startGame(b.dataset.d)));
-document.getElementById('rg_again').addEventListener('click',()=>startGame(diff));
+document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{ if(checkGameLimit('spawn')) return; startGame(b.dataset.d); }));
+document.getElementById('rg_again').addEventListener('click',()=>{ if(checkGameLimit('spawn')) return; startGame(diff); });
 document.getElementById('rg_quit').addEventListener('click',()=>{
   running=false; clearInterval(schedTimer); st.fx=[]; st.judge=null;
   ['rg_hud','rg_bar','rg_bubble'].forEach(id=>document.getElementById(id).hidden=true);
