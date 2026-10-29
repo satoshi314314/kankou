@@ -1035,9 +1035,22 @@ header{background:linear-gradient(130deg,#FFB7C5,#FFDA77);padding:10px 14px;disp
 <div id="qrModal">
   <div class="qm-box" id="qmScan">
     <div class="qm-title">📱 QRスキャン</div>
-    <div class="qm-sub">甑島のスポットで<br>QRコードをスキャン！</div>
-    <div style="font-size:56px;margin-bottom:12px">📷</div>
-    <button class="full-btn" onclick="simulateScan()">スキャン（デモ）</button>
+    <div class="qm-sub">スポットのQRコードに<br>カメラを向けてね！</div>
+    <div id="qmCamWrap" style="position:relative;width:220px;height:220px;margin:10px auto;border-radius:16px;overflow:hidden;background:#111;display:none;">
+      <video id="qmVideo" style="width:100%;height:100%;object-fit:cover;" playsinline autoplay muted></video>
+      <canvas id="qmCanvas" style="display:none;"></canvas>
+      <div style="position:absolute;inset:0;pointer-events:none;">
+        <div style="position:absolute;top:15px;left:15px;width:30px;height:30px;border-top:3px solid #E8729A;border-left:3px solid #E8729A;border-radius:4px 0 0 0;"></div>
+        <div style="position:absolute;top:15px;right:15px;width:30px;height:30px;border-top:3px solid #E8729A;border-right:3px solid #E8729A;border-radius:0 4px 0 0;"></div>
+        <div style="position:absolute;bottom:15px;left:15px;width:30px;height:30px;border-bottom:3px solid #E8729A;border-left:3px solid #E8729A;border-radius:0 0 0 4px;"></div>
+        <div style="position:absolute;bottom:15px;right:15px;width:30px;height:30px;border-bottom:3px solid #E8729A;border-right:3px solid #E8729A;border-radius:0 0 4px 0;"></div>
+      </div>
+    </div>
+    <div id="qmCamMsg" style="font-size:13px;color:#888;margin-bottom:10px;"></div>
+    <div id="qmStartArea">
+      <div style="font-size:56px;margin-bottom:12px">📷</div>
+      <button class="full-btn" id="qmStartBtn" onclick="startQRScan()">カメラを起動する</button>
+    </div>
     <button class="outline-btn" onclick="closeQR()">キャンセル</button>
   </div>
   <div class="qm-box" id="qmResult" style="display:none">
@@ -1777,11 +1790,90 @@ function closeSpotModal() {
 // ── OpenStreetMap + Leaflet 地図 ──
 
 function initSpotMap(){} // 地図なし
+var qrStream=null, qrTimer=null, qrJsQR=null;
+
 function openQR(){
-  $('qmScan').style.display='block'; $('qmResult').style.display='none';
+  $('qmScan').style.display='block';
+  $('qmResult').style.display='none';
+  $('qmCamWrap').style.display='none';
+  $('qmStartArea').style.display='block';
+  $('qmCamMsg').textContent='';
   $('qrModal').classList.add('show');
 }
-function closeQR(){ $('qrModal').classList.remove('show'); }
+
+function closeQR(){
+  stopQRScan();
+  $('qrModal').classList.remove('show');
+}
+
+function stopQRScan(){
+  if(qrTimer){ clearInterval(qrTimer); qrTimer=null; }
+  if(qrStream){ qrStream.getTracks().forEach(function(t){t.stop();}); qrStream=null; }
+}
+
+function startQRScan(){
+  $('qmStartArea').style.display='none';
+  $('qmCamMsg').textContent='カメラを起動中…';
+
+  // jsQRライブラリを動的読み込み
+  if(!qrJsQR){
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+    s.onload=function(){ qrJsQR=window.jsQR; doStartCamera(); };
+    s.onerror=function(){ $('qmCamMsg').textContent='ライブラリ読み込み失敗。Wi-Fiを確認してください。'; $('qmStartArea').style.display='block'; };
+    document.head.appendChild(s);
+  } else {
+    doStartCamera();
+  }
+}
+
+function doStartCamera(){
+  var constraints={video:{facingMode:'environment',width:{ideal:640},height:{ideal:640}}};
+  navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+    qrStream=stream;
+    var video=$('qmVideo');
+    video.srcObject=stream;
+    video.play();
+    $('qmCamWrap').style.display='block';
+    $('qmCamMsg').textContent='QRコードに向けてね📷';
+    qrTimer=setInterval(function(){ scanFrame(); },300);
+  }).catch(function(err){
+    $('qmCamMsg').textContent='カメラを使えませんでした（'+err.message+'）';
+    $('qmStartArea').style.display='block';
+  });
+}
+
+function scanFrame(){
+  var video=$('qmVideo');
+  if(video.readyState!==video.HAVE_ENOUGH_DATA) return;
+  var canvas=$('qmCanvas');
+  var ctx=canvas.getContext('2d');
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  var imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+  if(!qrJsQR) return;
+  var code=qrJsQR(imageData.data,imageData.width,imageData.height);
+  if(code && code.data){
+    stopQRScan();
+    handleQRData(code.data);
+  }
+}
+
+function handleQRData(url){
+  try{
+    var u=new URL(url);
+    var spotId=u.searchParams.get('spot');
+    if(spotId){
+      var sp=SPOTS.find(function(s){return s.id===spotId;});
+      if(sp){ showSpotResult(sp); return; }
+    }
+  }catch(e){}
+  $('qmCamMsg').textContent='このQRコードは対応していません';
+  $('qmCamWrap').style.display='none';
+  $('qmStartArea').style.display='block';
+}
+
 function simulateScan(){
   var unv=SPOTS.filter(function(sp){return !S.visitedSpots.has(sp.id);});
   var sp=unv.length>0?unv[Math.floor(Math.random()*unv.length)]:SPOTS[0];
