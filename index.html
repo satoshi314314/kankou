@@ -1951,59 +1951,8 @@ window.addEventListener('load', function(){
   var p=new URLSearchParams(location.search).get('spot');
   if(!p) return;
   var sp=SPOTS.find(function(s){return s.id===p;});
-  if(!sp) return;
-
-  // PWA（ホーム画面アプリ）かどうか判定
-  var isPWA = window.navigator.standalone === true
-           || window.matchMedia('(display-mode: standalone)').matches;
-
-  if(isPWA){
-    // PWAで開いている → そのままポイント付与
-    setTimeout(function(){showSpotResult(sp);},600);
-  } else {
-    // Safariブラウザで開いている → PWAへ誘導モーダルを表示
-    setTimeout(function(){showPwaGuide(sp);},400);
-  }
+  if(sp) setTimeout(function(){showSpotResult(sp);},600);
 });
-
-function showPwaGuide(sp){
-  // すでに存在する場合は削除
-  var old=document.getElementById('pwaGuide');
-  if(old) old.remove();
-
-  var box=document.createElement('div');
-  box.id='pwaGuide';
-  box.style.cssText='position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px;';
-  box.innerHTML=
-    '<div style="background:linear-gradient(160deg,#FFF0F5,#FFF9E6);border-radius:28px;padding:28px 22px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);">'
-    +'<div style="font-size:52px;margin-bottom:8px">'+sp.icon+'</div>'
-    +'<div style="font-size:18px;font-weight:900;color:#E8729A;margin-bottom:4px">'+sp.name+'</div>'
-    +'<div style="font-size:14px;color:#666;margin-bottom:18px">+'+sp.pt+' pt GET！</div>'
-    +'<div style="background:#fff3f8;border-radius:16px;padding:14px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.7;">'
-    +'📲 ホーム画面のアプリで開くと<br><strong>ポイントが記録されます！</strong><br>'
-    +'<span style="font-size:12px;color:#888;">（このSafari画面では記録されません）</span>'
-    +'</div>'
-    +'<button onclick="openInPWA(\''+sp.id+'\')" style="width:100%;padding:14px;background:linear-gradient(135deg,#E8729A,#c94f7a);color:white;border:none;border-radius:16px;font-size:16px;font-weight:900;cursor:pointer;margin-bottom:10px;">📲 アプリで開いてGET！</button>'
-    +'<button onclick="document.getElementById(\'pwaGuide\').remove();showSpotResult(document._tmpSp);" style="width:100%;padding:10px;background:none;border:2px solid #E8729A;color:#E8729A;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;">このまま受け取る（記録されません）</button>'
-    +'</div>';
-  document.body.appendChild(box);
-  document._tmpSp=sp;
-}
-
-function openInPWA(spotId){
-  // PWAのURLにspot=を付けて開く（iOSはwindow.open非対応のためlocation利用）
-  var url=location.origin+location.pathname+'?spot='+spotId;
-  // iOSのPWAはカスタムURLスキーム不要。location.hrefでPWAが起動する
-  window.location.href=url;
-  // フォールバック：2秒後にまだSafariならインストール案内
-  setTimeout(function(){
-    var already=document.getElementById('pwaGuide');
-    if(already){
-      already.querySelector('div>div:nth-child(4)').innerHTML=
-        '⬇️ まだインストールしていない場合は<br>Safariの <strong>「ホーム画面に追加」</strong> をしてから<br>QRを読み直してください。';
-    }
-  },2000);
-}
 
 // ═══════════════════════
 //  ENEMY / MOLE
