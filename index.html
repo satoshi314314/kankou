@@ -3259,7 +3259,6 @@ const visNow = ()=>ctxNow()-start-OFF.vis/1000;      // for drawing
 const judgeNow = (ms)=>ctxNow(ms)-start-OFF.tap/1000; // for scoring taps
 
 function startGame(d){
-  if(checkGameLimit('spawn')) return;
   incGameCount('spawn');
   diff=d; initAudio(); if(master) master.gain.setValueAtTime(0.6, ac.currentTime);
   song=buildSong(d);
